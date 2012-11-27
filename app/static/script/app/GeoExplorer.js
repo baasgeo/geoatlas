@@ -94,16 +94,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     
     constructor: function(config) {
         this.mapItems = [
-            {
-                xtype: "gxp_scaleoverlay"
-            }, {
-                xtype: "gx_zoomslider",
-                vertical: true,
-                height: 100,
-                plugins: new GeoExt.ZoomSliderTip({
-                    template: this.zoomSliderText
-                })
-            }
+            //{
+            //    xtype: "gxp_scaleoverlay"
+            //}, {
+            //    xtype: "gx_zoomslider",
+            //    vertical: true,
+            //    height: 100,
+            //    plugins: new GeoExt.ZoomSliderTip({
+            //        template: this.zoomSliderText
+            //    })
+            //}
         ];
 
         // both the Composer and the Viewer need to know about the viewerTools

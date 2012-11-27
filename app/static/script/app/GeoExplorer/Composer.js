@@ -83,22 +83,30 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
                 outputTarget: "tree"
             }, {
                 ptype: "gxp_zoomtolayerextent",
-                actionTarget: {target: "layers.contextMenu", index: 0}
+                actionTarget: {target: "layers.contextMenu", index: 0},
+                showButtonText: true,
+                actionTarget: {target: "groupNavigate"}
             }, {
-                ptype: "gxp_navigation", toggleGroup: "navigation"
+                ptype: "gxp_navigation", toggleGroup: "navigation",
+                showButtonText: true,
+                actionTarget: {target: "groupNavigate"}
             }, {
                 ptype: "gxp_zoom", toggleGroup: "navigation",
                 showZoomBoxAction: true,
+                showButtonText: true,
+                actionTarget: {target: "groupNavigate"},
                 controlOptions: {zoomOnClick: false}
             }, {
-                ptype: "gxp_navigationhistory"
+                ptype: "gxp_navigationhistory",
+                showButtonText: true,
+                actionTarget: {target: "groupNavigate"}
             }, {
-                ptype: "gxp_zoomtoextent"
+                ptype: "gxp_zoomtoextent",
+                showButtonText: true,
+                actionTarget: {target: "groupNavigate"}
             }, {
                 actions: ["aboutbutton"],  
                 actionTarget: {target: "groupGeneral"}
-            }, {
-                actions: ["-"], actionTarget: "paneltbar"
             }, {
                 actions: ["mapmenu"],
                 actionTarget: {target: "groupMap"}
@@ -109,9 +117,8 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
                 showButtonText: true,
                 actionTarget: {target: "groupMap"}
             }, {
-                actions: ["-"],
-                actionTarget: "paneltbar"
-            }, {
+            //    actions: ["-"], actionTarget: "paneltbar"
+            //}, {
                 ptype: "gxp_wmsgetfeatureinfo", format: 'grid',
                 toggleGroup: "interaction",
                 showButtonText: true,
@@ -423,10 +430,9 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
             }]
         });
         
-        var Map = new Ext.ButtonGroup({
-		   title   : 'Verslepen & zoomen',
-		   id: 'groupMap',
-		   columns : 6,
+		var General = new Ext.ButtonGroup({
+		   title   : 'Algemeen',
+		   id: 'groupGeneral',
 		   defaults: {
             	iconAlign  : 'top',
 				rowspan    : '2',
@@ -436,15 +442,14 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
 		   height  : 73,
 		   items   : []
 		});
-		
-		var General = new Ext.ButtonGroup({
-		   title   : 'Algemeen',
-		   id: 'groupGeneral',
-		   columns : 5,
+        
+        var MapView = new Ext.ButtonGroup({
+		   title   : 'Kaartbeeld',
+		   id: 'groupMap',
 		   defaults: {
-            	iconAlign  : 'top',
-				rowspan    : '2',
-				scale      : 'medium'
+            	iconAlign: 'top',
+				rowspan: '2',
+				scale: 'medium'
 				},
 		   layout  : 'table',
 		   height  : 73,
@@ -454,11 +459,24 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
         var Information = new Ext.ButtonGroup({
 		   title   : 'Onderzoeken',
 		   id: 'groupInformation',
-		   columns : 3,
 		   defaults: {
-            	iconAlign  : 'top',
-				rowspan    : '2',
-				scale      : 'medium'
+            	iconAlign: 'top',
+				rowspan: '2',
+				scale: 'medium'
+				},
+		   layout  : 'table',
+		   height  : 73,
+		   items   : []
+		});
+		
+		var Navigate = new Ext.ButtonGroup({
+		   title   : 'Navigeren',
+		   id: 'groupNavigate',
+		   defaults: {
+            	iconAlign: 'top',
+				rowspan: '2',
+				scale: 'medium',
+				showButtonText: true
 				},
 		   layout  : 'table',
 		   height  : 73,
@@ -470,8 +488,9 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
             id: 'paneltbar',
 			items: [
 					General,
-					Map,
-					Information		
+					MapView,
+					Information,
+					Navigate	
 				]
         });
         this.on("ready", function() {
