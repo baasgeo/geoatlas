@@ -82,17 +82,8 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
                 actionTarget: ["layers.tbar", "layers.contextMenu"],
                 outputTarget: "tree"
             }, {
-                ptype: "gxp_styler",
-                id: "styler",
-                outputConfig: {autoScroll: true, width: 320},
-                actionTarget: ["layers.tbar", "layers.contextMenu"],
-                outputTarget: "tree"
-            }, {
                 ptype: "gxp_zoomtolayerextent",
                 actionTarget: {target: "layers.contextMenu", index: 0}
-            }, {
-                ptype: "gxp_googleearth",
-                actionTarget: ["map.tbar", "globe.tbar"]
             }, {
                 ptype: "gxp_navigation", toggleGroup: "navigation"
             }, {
@@ -104,17 +95,19 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
             }, {
                 ptype: "gxp_zoomtoextent"
             }, {
-                actions: ["aboutbutton"],  actionTarget: "paneltbar"
+                actions: ["aboutbutton"],  
+                actionTarget: {target: "groupGeneral"}
             }, {
                 actions: ["-"], actionTarget: "paneltbar"
             }, {
-                actions: ["mapmenu"],  actionTarget: "paneltbar"
+                actions: ["mapmenu"],
+                actionTarget: {target: "groupMap"}
             }, {
                 ptype: "gxp_print",
                 customParams: {outputFilename: 'GeoExplorer-print'},
                 printService: config.printService,
-                actionTarget: "paneltbar",
-                showButtonText: true
+                showButtonText: true,
+                actionTarget: {target: "groupMap"}
             }, {
                 actions: ["-"],
                 actionTarget: "paneltbar"
@@ -122,7 +115,7 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
                 ptype: "gxp_wmsgetfeatureinfo", format: 'grid',
                 toggleGroup: "interaction",
                 showButtonText: true,
-                actionTarget: "paneltbar"
+                actionTarget: {target: "groupInformation"}
             }, {
                 ptype: "gxp_featuremanager",
                 id: "querymanager",
@@ -135,7 +128,7 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
                 ptype: "gxp_queryform",
                 featureManager: "querymanager",
                 autoExpand: "query",
-                actionTarget: "paneltbar",
+                actionTarget: {target: "groupInformation"},
                 outputTarget: "query"
             }, {
                 ptype: "gxp_featuregrid",
@@ -158,7 +151,7 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
                 ptype: "gxp_measure", toggleGroup: "interaction",
                 controlOptions: {immediate: true},
                 showButtonText: true,
-                actionTarget: "paneltbar"
+                actionTarget: {target: "groupInformation"}
             }, {
                 ptype: "gxp_featuremanager",
                 id: "featuremanager",
@@ -171,7 +164,7 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
                 splitButton: true,
                 showButtonText: true,
                 toggleGroup: "interaction",
-                actionTarget: "paneltbar"
+                actionTarget: {target: "groupMap"}
             }, {
                 actions: ["->"],
                 actionTarget: "paneltbar"
@@ -429,10 +422,57 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
                 layout: "fit"
             }]
         });
+        
+        var Map = new Ext.ButtonGroup({
+		   title   : 'Verslepen & zoomen',
+		   id: 'groupMap',
+		   columns : 6,
+		   defaults: {
+            	iconAlign  : 'top',
+				rowspan    : '2',
+				scale      : 'medium'
+				},
+		   layout  : 'table',
+		   height  : 73,
+		   items   : []
+		});
+		
+		var General = new Ext.ButtonGroup({
+		   title   : 'Algemeen',
+		   id: 'groupGeneral',
+		   columns : 5,
+		   defaults: {
+            	iconAlign  : 'top',
+				rowspan    : '2',
+				scale      : 'medium'
+				},
+		   layout  : 'table',
+		   height  : 73,
+		   items   : []
+		});
+		
+        var Information = new Ext.ButtonGroup({
+		   title   : 'Onderzoeken',
+		   id: 'groupInformation',
+		   columns : 3,
+		   defaults: {
+            	iconAlign  : 'top',
+				rowspan    : '2',
+				scale      : 'medium'
+				},
+		   layout  : 'table',
+		   height  : 73,
+		   items   : []
+		});
+		
         var toolbar = new Ext.Toolbar({
             disabled: true,
             id: 'paneltbar',
-            items: []
+			items: [
+					General,
+					Map,
+					Information		
+				]
         });
         this.on("ready", function() {
             // enable only those items that were not specifically disabled
@@ -445,66 +485,6 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
             });
         });
 
-        var googleEarthPanel = new gxp.GoogleEarthPanel({
-            mapPanel: this.mapPanel,
-            id: "globe",
-            tbar: [],
-            listeners: {
-                beforeadd: function(record) {
-                    return record.get("group") !== "background";
-                }
-            }
-        });
-        
-        // TODO: continue making this Google Earth Panel more independent
-        // Currently, it's too tightly tied into the viewer.
-        // In the meantime, we keep track of all items that the were already
-        // disabled when the panel is shown.
-        var preGoogleDisabled = [];
-
-        googleEarthPanel.on("show", function() {
-            preGoogleDisabled.length = 0;
-            toolbar.items.each(function(item) {
-                if (item.disabled) {
-                    preGoogleDisabled.push(item);
-                }
-            });
-            toolbar.disable();
-            // loop over all the tools and remove their output
-            for (var key in this.tools) {
-                var tool = this.tools[key];
-                if (tool.outputTarget === "map") {
-                    tool.removeOutput();
-                }
-            }
-            var layersContainer = Ext.getCmp("tree");
-            var layersToolbar = layersContainer && layersContainer.getTopToolbar();
-            if (layersToolbar) {
-                layersToolbar.items.each(function(item) {
-                    if (item.disabled) {
-                        preGoogleDisabled.push(item);
-                    }
-                });
-                layersToolbar.disable();
-            }
-        }, this);
-
-        googleEarthPanel.on("hide", function() {
-            // re-enable all tools
-            toolbar.enable();
-            
-            var layersContainer = Ext.getCmp("tree");
-            var layersToolbar = layersContainer && layersContainer.getTopToolbar();
-            if (layersToolbar) {
-                layersToolbar.enable();
-            }
-            // now go back and disable all things that were disabled previously
-            for (var i=0, ii=preGoogleDisabled.length; i<ii; ++i) {
-                preGoogleDisabled[i].disable();
-            }
-
-        }, this);
-
         this.mapPanelContainer = new Ext.Panel({
             layout: "card",
             region: "center",
@@ -512,8 +492,7 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
                 border: false
             },
             items: [
-                this.mapPanel,
-                googleEarthPanel
+                this.mapPanel
             ],
             activeItem: 0
         });

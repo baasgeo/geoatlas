@@ -34,9 +34,6 @@ Ext.override(Ext.dd.DragTracker, {
     // these source plugins were renamed after 2.3.2
     Ext.preg("gx_wmssource", gxp.plugins.WMSSource);
     Ext.preg("gx_olsource", gxp.plugins.OLSource);
-    Ext.preg("gx_googlesource", gxp.plugins.GoogleSource);
-    Ext.preg("gx_bingsource", gxp.plugins.BingSource);
-    Ext.preg("gx_osmsource", gxp.plugins.OSMSource);
     // use layermanager instead of layertree
     Ext.preg("gxp_layertree", gxp.plugins.LayerManager);
 })();
@@ -171,12 +168,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             checked: true, 
             iconCls: "gxp-icon-legend",
             ptype: "gxp_legend"
-        }, {
-            leaf: true,
-            text: gxp.plugins.GoogleEarth.prototype.tooltip,
-            checked: true,
-            iconCls: "gxp-icon-googleearth",
-            ptype: "gxp_googleearth"
         }, {
             hidden: true, actions: ["->"], checked: true
         }, {
